@@ -2,542 +2,594 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Synergy Bank: Rekening Emosi v3.2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Emotional Bank Account - Mission</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6C63FF;
-            --secondary: #FF6584;
-            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --glass: rgba(255, 255, 255, 0.96);
-            --deposit: #43A047;
-            --withdrawal: #E53935;
-            --text-dark: #2D3436;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-light: #f8fafc;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --deposit: #10b981;
+            --withdrawal: #f43f5e;
+            --warning: #f59e0b;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; touch-action: manipulation; }
+        
         body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-gradient);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-dark);
-            padding: 10px;
-            overflow: hidden;
-        }
-
-        #game-container {
-            width: 100%;
-            max-width: 500px;
-            height: 90vh;
-            max-height: 850px;
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            border-radius: 35px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.25);
-            position: relative;
-            overflow: hidden;
-            border: 2px solid rgba(255,255,255,0.6);
-            display: flex;
             flex-direction: column;
-        }
-
-        /* Fixed Top Bar */
-        .top-bar {
-            width: 100%;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            z-index: 100;
-        }
-
-        .lives-container { display: flex; gap: 4px; font-size: 1.2rem; }
-        .score-container { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
-
-        .icon-btn {
-            background: #F0EFFF; width: 38px; height: 38px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 1rem; border: 1.5px solid var(--primary);
-            transition: 0.3s;
-        }
-        .icon-btn.playing { animation: musicPulse 1.8s ease-in-out infinite; border-color: var(--secondary); background: #FFF0F3; }
-        @keyframes musicPulse {
-            0%, 100% { box-shadow: 0 0 5px rgba(108,99,255,0.2); }
-            50% { box-shadow: 0 0 15px rgba(255,101,132,0.4); }
-        }
-
-        .screen {
-            display: none;
+            overflow-x: hidden;
             padding: 20px;
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        
+        /* Container */
+        .screen {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
-            flex: 1;
-            overflow-y: auto;
-            animation: slideIn 0.4s ease-out forwards;
+            gap: 20px;
+            flex-grow: 1;
+            padding-bottom: 60px;
         }
 
-        .screen.active { display: flex; }
+        /* Typography */
+        h1 { font-size: 1.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
+        h2 { font-size: 1.4rem; font-weight: 600; margin-bottom: 10px; }
+        p { font-size: 0.95rem; line-height: 1.6; color: #cbd5e1; }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Inputs & Buttons */
-        .input-group { width: 100%; margin-bottom: 12px; text-align: left; }
-        .input-group label { font-size: 0.75rem; font-weight: 700; color: var(--primary); margin-left: 5px; }
+        /* Form & Buttons */
         input {
-            width: 100%; padding: 12px 15px; border-radius: 12px;
-            border: 2px solid #eee; font-family: inherit; font-size: 0.9rem;
-            outline: none; transition: 0.3s; margin-top: 4px;
+            width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px;
+            border: 2px solid #334155; background: var(--bg-card); color: white; font-size: 1rem; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--primary); background: #fbfaff; }
-
-        .btn {
-            background: var(--primary); color: white; border: none;
-            padding: 15px; border-radius: 18px; font-weight: 700;
-            cursor: pointer; font-family: inherit; width: 100%;
-            box-shadow: 0 8px 20px rgba(108,99,255,0.3); transition: 0.3s;
-            margin-top: 10px; flex-shrink: 0;
-        }
-        .btn:active { transform: scale(0.97); }
-
-        /* Story/VN Area */
-        .character-box { width: 110px; margin-bottom: 10px; animation: float 4s ease-in-out infinite; flex-shrink: 0; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        input:focus { border-color: var(--primary); }
         
-        .vn-box {
-            background: white; border-radius: 20px; padding: 18px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.04); text-align: left;
-            width: 100%; border-left: 6px solid var(--primary); margin-bottom: 15px;
+        button.btn {
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 1.1rem;
+            cursor: pointer; width: 100%; transition: transform 0.2s, box-shadow 0.2s;
         }
-        .vn-box h4 { font-size: 0.8rem; color: var(--primary); margin-bottom: 5px; }
+        button.btn:active { transform: scale(0.95); }
+        button.btn:disabled { background: #475569; cursor: not-allowed; }
 
-        /* Gameplay */
-        .hint-text { font-size: 0.75rem; opacity: 0.6; margin-bottom: 10px; font-style: italic; }
-        .card-pile { 
-            width: 100%; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            flex: 1;
-            overflow-y: auto;
-            padding: 5px;
-            margin-bottom: 15px;
-        }
-        .card {
-            background: white; padding: 15px; border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid transparent;
-            cursor: pointer; transition: 0.2s; font-size: 0.85rem; line-height: 1.4;
-            text-align: left;
-        }
-        .card.selected { border-color: var(--primary); background: #f0efff; box-shadow: 0 5px 15px rgba(108,99,255,0.2); }
+        /* Hook Box */
+        .hook-box { background: rgba(99, 102, 241, 0.1); border-left: 4px solid var(--primary); padding: 15px; border-radius: 0 10px 10px 0; margin-top: 10px; }
+
+        /* Top Bar Gamification */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 15px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .score-badge { font-weight: 800; font-size: 1.2rem; color: #fbbf24; }
+        .audio-toggle { background: transparent; border: 1px solid #cbd5e1; color: white; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
+
+        /* Progress Bar */
+        .progress-container { width: 100%; background: #334155; border-radius: 10px; height: 10px; overflow: hidden; margin-bottom: 10px;}
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; }
         
-        .zones-container { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            width: 100%; 
-            margin-top: auto;
-            padding-top: 15px;
-            border-top: 1px solid rgba(0,0,0,0.05);
-            flex-shrink: 0;
+        /* Badge UI */
+        .badges-container { display: flex; gap: 10px; margin-bottom: 10px; justify-content: center; min-height: 35px;}
+        .badge { background: #334155; padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; color: #94a3b8; border: 1px solid #475569; transition: 0.5s; }
+        .badge.earned { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border-color: #fbbf24; box-shadow: 0 0 10px rgba(251,191,36,0.3); }
+
+        /* Game Board */
+        .board { display: flex; flex-direction: column; gap: 20px; flex-grow: 1; }
+        
+        .card-area {
+            min-height: 180px; display: flex; justify-content: center; align-items: center; position: relative;
         }
+        
+        .game-card {
+            background: white; color: var(--bg-dark); padding: 25px 20px; border-radius: 16px; font-weight: 600; font-size: 1.1rem;
+            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); cursor: grab; position: absolute; width: 100%; max-width: 320px;
+            user-select: none; z-index: 10; border-bottom: 5px solid #cbd5e1; touch-action: none; transition: transform 0.2s ease, opacity 0.2s;
+        }
+        .game-card.dragging { transition: none; cursor: grabbing; z-index: 100; opacity: 0.9; transform: scale(1.05); box-shadow: 0 20px 30px rgba(0,0,0,0.6); }
+
+        .zones { display: flex; gap: 15px; justify-content: space-between; width: 100%; }
         .drop-zone {
-            height: 90px; border: 3px dashed #cbd5e0; border-radius: 20px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.5); transition: 0.3s; position: relative;
+            flex: 1; border: 2px dashed #475569; border-radius: 16px; padding: 25px 10px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: 0.3s; position: relative; text-align: center; overflow: hidden;
+        }
+        .drop-zone h3 { font-size: 1.2rem; pointer-events: none; z-index: 2; margin-bottom: 5px; }
+        .drop-zone p { font-size: 0.75rem; pointer-events: none; z-index: 2; }
+        .drop-zone::before { content: ''; position: absolute; inset: 0; opacity: 0.1; z-index: 1; transition: 0.3s; }
+        
+        .zone-deposit { color: var(--deposit); border-color: var(--deposit); }
+        .zone-deposit::before { background: var(--deposit); }
+        .zone-withdrawal { color: var(--withdrawal); border-color: var(--withdrawal); }
+        .zone-withdrawal::before { background: var(--withdrawal); }
+
+        .zone-deposit.highlight { background: rgba(16, 185, 129, 0.2); border-style: solid; }
+        .zone-withdrawal.highlight { background: rgba(244, 63, 94, 0.2); border-style: solid; }
+
+        /* Feedback floating text */
+        .float-feedback { position: fixed; font-size: 2rem; font-weight: 800; pointer-events: none; opacity: 0; z-index: 1000; text-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.2); } }
+
+        /* Debrief Screen */
+        .result-card { background: var(--bg-card); padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 20px; }
+        .result-card h2 { color: var(--primary); font-size: 2rem; }
+        .feedback-list { display: flex; flex-direction: column; gap: 15px; }
+        .fb-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 5px solid; text-align: left; }
+        .fb-item.correct { border-color: var(--deposit); }
+        .fb-item.wrong { border-color: var(--withdrawal); }
+        .fb-item .q-text { font-weight: 600; font-size: 0.95rem; margin-bottom: 5px; }
+        .fb-item .a-text { font-size: 0.85rem; color: #94a3b8; }
+
+        /* Footer */
+        .footer { text-align: center; padding: 20px; font-size: 0.75rem; color: #64748b; margin-top: auto; }
+        
+        /* Hint Story */
+        .story-hint { background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 8px; font-size: 0.85rem; text-align: center; font-style: italic; margin-bottom: 10px; color: #cbd5e1; }
+
+        /* Message Box */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            z-index: 2000;
+            text-align: center;
+            border: 2px solid var(--primary);
+            max-width: 80%;
+        }
+        .message-box button {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
         }
-        .drop-zone.highlight { border-color: var(--primary); background: rgba(108,99,255,0.1); animation: pulse 1.5s infinite; }
-        .drop-zone h3 { font-size: 0.8rem; font-weight: 800; margin-top: 4px; }
-
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
-
-        /* Conclusion Style */
-        .conclusion-box {
-            background: var(--primary); color: white;
-            padding: 15px; border-radius: 20px; margin: 15px 0;
-            font-size: 0.85rem; line-height: 1.6; font-style: italic;
-            box-shadow: 0 10px 20px rgba(108,99,255,0.2);
-            text-align: center;
-        }
-
-        .footer-copyright {
-            margin-top: auto; padding: 10px; font-size: 0.6rem;
-            opacity: 0.5; font-weight: 600; flex-shrink: 0;
-        }
-
-        #toast {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            padding: 15px 30px; border-radius: 20px; color: white; font-weight: 800;
-            z-index: 2000; display: none; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-
-        .feedback-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 0.8rem; text-align: left; }
-        .tag { font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-bottom: 3px; display: inline-block; }
-        .tag-dep { background: #E8F5E9; color: var(--deposit); }
-        .tag-with { background: #FFEBEE; color: var(--withdrawal); }
     </style>
 </head>
 <body>
 
-<div id="game-container">
-    <!-- Top Bar Dashboard - No Overlap -->
-    <div id="game-dashboard" class="top-bar" style="display: none;">
-        <div class="lives-container" id="game-lives">❤️❤️❤️</div>
-        <div class="score-container">SALDO: <span id="game-score">0</span></div>
-        <div id="music-btn" class="icon-btn" onclick="toggleMusic()">🔇</div>
-    </div>
-
-    <div id="toast"></div>
-
-    <!-- 1. WELCOME SCREEN -->
-    <div id="screen-welcome" class="screen active">
-        <div style="margin: 20px 0 10px;">
-            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary);">
-                <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
-            </svg>
-        </div>
-        <h1 style="font-size: 1.8rem; color: var(--primary); letter-spacing: -1px;">Synergy Bank</h1>
-        <p style="margin-bottom: 20px; opacity: 0.7; font-size: 0.85rem;">Kelola Rekening Emosimu!</p>
-        
-        <div class="input-group">
-            <label>NAMA LENGKAP</label>
-            <input type="text" id="p-name" placeholder="Masukkan nama...">
-        </div>
-        <div class="input-group">
-            <label>NIK</label>
-            <input type="text" id="p-nik" placeholder="Masukkan NIK...">
+    <!-- SCREEN 1: THE GATEWAY -->
+    <div id="screen-gateway" class="screen">
+        <div class="text-center" style="margin-top: 50px;">
+            <h1>Emotional Bank Account</h1>
+            <h2>Simulation Protocol</h2>
         </div>
         
-        <button class="btn" onclick="goToStory()">Mulai Perjalanan 🚀</button>
+        <div class="hook-box">
+            <p><strong>Kenapa game ini penting?</strong><br>Pernah merasa rekan kerjamu sulit diajak kolaborasi? Mungkin "Saldo Emosi" kalian sedang krisis! Mari petakan dan perbaiki cara kita berinteraksi.</p>
+        </div>
 
-        <div class="footer-copyright">
-            Education & Training Dept. © 2026
+        <div style="margin-top: 20px;">
+            <input type="text" id="playerName" placeholder="Masukkan Nama Lengkap" required autocomplete="off">
+            <input type="text" id="playerNIK" placeholder="Masukkan NIK" required autocomplete="off">
+            <button class="btn" id="btn-login" onclick="goToBriefing()">Inisiasi Sistem</button>
         </div>
     </div>
 
-    <!-- 2. STORY SCREEN -->
-    <div id="screen-story" class="screen">
-        <div class="character-box">
-            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <path d="M50 100 C 50 40, 150 40, 150 100" fill="#2D3436"/>
-                <circle cx="100" cy="90" r="45" fill="#FFDBAC"/>
-                <path d="M55 80 C 55 40, 145 40, 145 80 C 145 60, 55 60, 55 80" fill="#2D3436"/>
-                <circle cx="85" cy="85" r="3" fill="#2D3436"/>
-                <circle cx="115" cy="85" r="3" fill="#2D3436"/>
-                <path d="M90 105 Q 100 115, 110 105" stroke="#2D3436" stroke-width="2" fill="none" stroke-linecap="round"/>
-                <path d="M60 135 L 140 135 L 160 190 L 40 190 Z" fill="#6C63FF"/>
-                <path d="M100 135 L 120 155 L 100 190 L 80 155 Z" fill="white"/>
-            </svg>
+    <!-- SCREEN 2: MISSION BRIEFING -->
+    <div id="screen-briefing" class="screen hidden">
+        <div class="text-center">
+            <h1>Mission Briefing</h1>
+            <h2 id="greetPlayer">Selamat datang, Agen.</h2>
         </div>
-        <div class="vn-box">
-            <h4>Dara (Expert RM)</h4>
-            <p id="vn-text" style="line-height: 1.5; font-size: 0.85rem; color: #444;"></p>
-        </div>
-        <button class="btn" onclick="handleStoryNext()">Lanjut »</button>
-    </div>
-
-    <!-- 3. MISSION SCREEN -->
-    <div id="screen-mission" class="screen">
-        <h2 style="color:var(--primary); margin-bottom: 15px; font-weight: 800; font-size: 1.4rem;">MISI ANDA</h2>
-        <div style="text-align: left; width: 100%; margin-bottom: 20px;">
-            <div style="background: #f8f9ff; padding: 12px; border-radius: 12px; margin-bottom: 8px; border-left: 4px solid var(--primary);">
-                <p style="font-size: 0.8rem;">🎯 <strong>Objektif:</strong> Bedakan perilaku "Setoran" atau "Tarikan" di kantor.</p>
-            </div>
-            <div style="background: #f8f9ff; padding: 12px; border-radius: 12px; margin-bottom: 8px; border-left: 4px solid var(--primary);">
-                <p style="font-size: 0.8rem;">⚡ <strong>Cara:</strong> Klik kartu skenario, lalu klik kotak tujuan yang sesuai.</p>
-            </div>
-            <div style="background: #f8f9ff; padding: 12px; border-radius: 12px; border-left: 4px solid var(--primary);">
-                <p style="font-size: 0.8rem;">❤️ <strong>Rule:</strong> Jaga saldomu jangan sampai bangkrut!</p>
-            </div>
-        </div>
-        <button class="btn" onclick="startGame()">Saya Mengerti, Mulai! 🎮</button>
-    </div>
-
-    <!-- 4. GAMEPLAY SCREEN -->
-    <div id="screen-game" class="screen">
-        <p class="hint-text">Klik kartu untuk memilih:</p>
-        <div id="card-pile" class="card-pile"></div>
         
-        <div class="zones-container">
-            <div id="zone-deposit" class="drop-zone" onclick="handleDrop('deposit')">
-                <span style="font-size: 1.8rem;">💰</span>
-                <h3 style="color:var(--deposit)">SETORAN</h3>
+        <div class="result-card" style="text-align: left;">
+            <p style="margin-bottom: 10px;"><strong>Latar Belakang:</strong> Anda ditugaskan sebagai Project Manager di tim lintas divisi yang dinamis. Ingat, setiap interaksi kerja adalah sebuah "transaksi".</p>
+            <p style="margin-bottom: 10px;"><strong>Misi Anda:</strong> Capai Saldo Emosi tertinggi sebelum hari berakhir. Kenali perilaku yang membangun relasi vs yang merusak relasi secara instan.</p>
+            <p><strong>Aturan Main:</strong></p>
+            <ul style="margin-left: 20px; color: #cbd5e1; font-size: 0.9rem; margin-top: 5px;">
+                <li>Seret (Drag) kartu perilaku ke brankas yang tepat.</li>
+                <li><span style="color:var(--deposit)">+10 Poin</span> jika klasifikasi benar.</li>
+                <li><span style="color:var(--withdrawal)">-10 Poin</span> jika miskalkulasi (salah menilai).</li>
+            </ul>
+        </div>
+
+        <button class="btn" onclick="startGame()">SAYA SIAP MEMULAI (Nyalakan Audio)</button>
+    </div>
+
+    <!-- SCREEN 3: CORE EXECUTION -->
+    <div id="screen-game" class="screen hidden">
+        <div class="top-bar">
+            <div>
+                <span style="font-size:0.8rem; color:#94a3b8">Saldo Emosi:</span><br>
+                <span class="score-badge">$<span id="scoreDisplay">0</span></span>
             </div>
-            <div id="zone-withdrawal" class="drop-zone" onclick="handleDrop('withdrawal')">
-                <span style="font-size: 1.8rem;">📉</span>
-                <h3 style="color:var(--withdrawal)">TARIKAN</h3>
+            <button class="audio-toggle" id="btn-audio" onclick="toggleAudio()">🔊 BGM ON</button>
+        </div>
+
+        <div class="badges-container">
+            <div class="badge" id="badge-1">Rookie Observer</div>
+            <div class="badge" id="badge-2">Master Communicator</div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="story-hint" id="storyHint">Menganalisis interaksi rekan kerja...</div>
+
+        <div class="board">
+            <div class="card-area" id="cardArea">
+                <!-- Card is injected here by JS -->
+            </div>
+
+            <div class="zones">
+                <div class="drop-zone zone-deposit" id="zone-deposit" data-type="deposit">
+                    <h3>SETORAN</h3>
+                    <p>Membangun Relasi</p>
+                </div>
+                <div class="drop-zone zone-withdrawal" id="zone-withdrawal" data-type="withdrawal">
+                    <h3>TARIKAN</h3>
+                    <p>Merusak Relasi</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 5. RESULT SCREEN -->
-    <div id="screen-result" class="screen">
-        <div id="result-icon" style="font-size: 3rem; margin-top: 5px;">🏆</div>
-        <h1 id="result-title" style="font-size: 1.5rem; margin: 5px 0;">Berhasil!</h1>
-        <p id="result-user-info" style="font-weight: 700; color: var(--primary); font-size: 0.8rem;"></p>
-        <div style="font-size: 1.2rem; margin: 5px 0; font-weight: 800;" id="result-score-final">Saldo: 0</div>
+    <!-- SCREEN 4: POST-ACTION DEBRIEF -->
+    <div id="screen-debrief" class="screen hidden">
+        <div class="text-center">
+            <h1>Mission Debrief</h1>
+        </div>
         
-        <!-- Kesimpulan Mindset -->
-        <div id="mindset-closing" class="conclusion-box"></div>
+        <div class="result-card">
+            <p>Saldo Emosi Akhir:</p>
+            <h2>$<span id="finalScore"></span></h2>
+            <p id="reinforcementMsg" style="margin-top:10px; font-weight:600;"></p>
+        </div>
 
-        <div style="width:100%; overflow-y:auto; flex:1; margin: 10px 0; border: 1px solid #eee; border-radius:15px;" id="feedback-list"></div>
-        
-        <button class="btn" onclick="location.reload()">Main Lagi 🔄</button>
+        <h3>Log Transaksi (Evaluasi):</h3>
+        <div class="feedback-list" id="feedbackList">
+            <!-- Feedbacks injected here -->
+        </div>
+
+        <button class="btn" style="margin-top:20px;" onclick="location.reload()">Selesaikan & Kembali</button>
     </div>
-</div>
 
-<script>
-// =============================================
-//  AUDIO ENGINE: Dynamic BGM
-// =============================================
-let audioCtx = null;
-let bgmNodes = {};
-let isMusicOn = false;
+    <div class="footer">Education & Training Dept. © 2026</div>
 
-function initAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-}
+    <div id="floatTxt" class="float-feedback"></div>
 
-function startBGM() {
-    initAudio();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+    <script>
+        /* --- GAME DATA & STATE --- */
+        const questions = [
+            { text: "Meminta umpan balik (feedback) atas presentasi yang baru saja kamu lakukan.", type: "deposit", hint: "Deposit mempercepat pemahaman ekspektasi." },
+            { text: "Menyela pembicaraan rekan kerja saat rapat karena merasa idemu lebih baik.", type: "withdrawal", hint: "Egoisme merusak rasa aman dalam tim." },
+            { text: "Mengklarifikasi pembagian tugas secara detail di awal proyek.", type: "deposit", hint: "Kejelasan mencegah konflik di masa depan." },
+            { text: "Mengambil pujian penuh atas kesuksesan proyek yang dikerjakan bersama tim.", type: "withdrawal", hint: "Ketidakjujuran langsung menguras saldo emosi." },
+            { text: "Menghargai perbedaan pendapat dan proaktif mencari solusi win-win.", type: "deposit", hint: "Menunjukkan toleransi adalah setoran besar." },
+            { text: "Mengingkari janji untuk membantu rekan satu tim karena alasan sepele.", type: "withdrawal", hint: "Janji yang batal adalah penarikan kepercayaan." },
+            { text: "Meminta maaf secara tulus tanpa mencari alasan ketika kamu membuat kesalahan.", type: "deposit", hint: "Integritas memulihkan saldo yang terkuras." },
+            { text: "Membicarakan keburukan anggota tim lain di belakang mereka (Gossip).", type: "withdrawal", hint: "Gossip menciptakan lingkungan penuh kecurigaan." },
+            { text: "Mengucapkan terima kasih secara spesifik atas bantuan kecil dari rekan kerja.", type: "deposit", hint: "Apresiasi kecil membangun tabungan jangka panjang." },
+            { text: "Bersikap defensif dan marah ketika diberikan kritik membangun.", type: "withdrawal", hint: "Komunikasi tertutup menghalangi penyelesaian masalah." }
+        ];
 
-    const BPM = 128;
-    const STEP = 60 / BPM;
-    const masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.12;
-    masterGain.connect(audioCtx.destination);
-    bgmNodes.master = masterGain;
+        let state = {
+            name: '', nik: '', score: 0, currentQ: 0,
+            feedbackLog: [], shuffledQ: []
+        };
 
-    const playSynth = (freq, t, dur, vol, type = 'triangle') => {
-        const osc = audioCtx.createOscillator();
-        const env = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        env.gain.setValueAtTime(0, t);
-        env.gain.linearRampToValueAtTime(vol, t + 0.01);
-        env.gain.exponentialRampToValueAtTime(0.001, t + dur);
-        osc.connect(env); env.connect(masterGain);
-        osc.start(t); osc.stop(t + dur);
-    };
+        /* --- UI MANAGEMENT --- */
+        function showMessage(msg) {
+            const box = document.createElement('div');
+            box.className = 'message-box';
+            box.innerHTML = `<p>${msg}</p><button onclick="this.parentElement.remove()">OK</button>`;
+            document.body.appendChild(box);
+        }
 
-    let beat = 0;
-    const loop = setInterval(() => {
-        const now = audioCtx.currentTime;
-        const notes = [523.25, 587.33, 659.25, 783.99, 880.00, 783.99, 659.25, 523.25];
-        const pattern = [1, 0, 1, 0, 1, 1, 0, 1];
-        if (pattern[beat % 8]) playSynth(notes[beat % 8], now, 0.15, 0.15, 'triangle');
-        if (beat % 4 === 0) playSynth(130.81, now, 0.3, 0.2, 'square');
-        if (beat % 2 === 0) playSynth(60, now, 0.1, 0.3, 'sine');
-        beat++;
-    }, STEP * 500);
-    bgmNodes.loop = loop;
-}
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
 
-function stopBGM() {
-    if (bgmNodes.master) {
-        bgmNodes.master.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-        clearInterval(bgmNodes.loop);
-        bgmNodes = {};
-    }
-}
+        function goToBriefing() {
+            const name = document.getElementById('playerName').value.trim();
+            const nik = document.getElementById('playerNIK').value.trim();
+            if(!name || !nik) { showMessage("Mohon lengkapi Nama dan NIK."); return; }
+            state.name = name; state.nik = nik;
+            document.getElementById('greetPlayer').innerText = `Selamat datang, ${name}.`;
+            switchScreen('screen-briefing');
+        }
 
-function toggleMusic() {
-    const btn = document.getElementById('music-btn');
-    if (!isMusicOn) {
-        startBGM();
-        isMusicOn = true;
-        btn.textContent = '🔊';
-        btn.classList.add('playing');
-    } else {
-        stopBGM();
-        isMusicOn = false;
-        btn.textContent = '🔇';
-        btn.classList.remove('playing');
-    }
-}
+        function startGame() {
+            initAudio(); // Required due to browser auto-play policies (must be on user interaction)
+            state.shuffledQ = [...questions].sort(() => Math.random() - 0.5); // Shuffle array
+            switchScreen('screen-game');
+            loadNextCard();
+        }
 
-function playSfx(type) {
-    if (!audioCtx) initAudio();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    const now = audioCtx.currentTime;
+        /* --- CORE EXECUTION (DRAG & DROP - MOBILE & DESKTOP NATIVE) --- */
+        let activeCard = null;
+        let isDragging = false;
+        let startX, startY, currentX, currentY;
+        const cardArea = document.getElementById('cardArea');
+        const depositZone = document.getElementById('zone-deposit');
+        const withdrawalZone = document.getElementById('zone-withdrawal');
 
-    if (type === 'correct') {
-        osc.frequency.setValueAtTime(880, now);
-        osc.frequency.exponentialRampToValueAtTime(1760, now + 0.1);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-        osc.start(); osc.stop(now + 0.2);
-    } else if (type === 'wrong') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.linearRampToValueAtTime(100, now + 0.3);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-        osc.start(); osc.stop(now + 0.3);
-    }
-}
+        function loadNextCard() {
+            if(state.currentQ >= state.shuffledQ.length) { endSimulation(); return; }
+            
+            // Update UI
+            document.getElementById('progressBar').style.width = `${(state.currentQ / state.shuffledQ.length) * 100}%`;
+            document.getElementById('storyHint').innerText = "Hint: " + state.shuffledQ[state.currentQ].hint;
 
-// =============================================
-//  GAME LOGIC
-// =============================================
-let playerName = "";
-let playerNik = "";
-let lives = 3;
-let score = 0;
-let storyStep = 0;
-let selectedId = null;
+            // Check badges
+            if(state.currentQ >= 5 && state.score > 0) document.getElementById('badge-1').classList.add('earned');
 
-const scenarios = [
-    { id: 1, text: "Minta maaf langsung ke senior karena salah ketik tanggal laporan.", type: "deposit", feedback: "Integritas & mengakui kesalahan membangun kepercayaan tinggi." },
-    { id: 2, text: "Ikut-ikutan gosipin staf divisi lain di pantry saat jam istirahat.", type: "withdrawal", feedback: "Gosip merusak loyalitas tim dan reputasi pribadi." },
-    { id: 3, text: "Kirim laporan mingguan tepat waktu tanpa perlu diingatkan atasan.", type: "deposit", feedback: "Keandalan (Reliability) membangun rasa aman bagi rekan kerja." },
-    { id: 4, text: "Minta tolong dokumen mendesak tanpa kata 'tolong' atau 'terima kasih'.", type: "withdrawal", feedback: "Kurang apresiasi kecil mengikis kenyamanan hubungan kerja." },
-    { id: 5, text: "Menepati janji meeting tepat waktu meskipun sedang sibuk.", type: "deposit", feedback: "Menghargai waktu orang lain adalah penghormatan profesional." }
-];
+            // Create Card
+            const qData = state.shuffledQ[state.currentQ];
+            cardArea.innerHTML = '';
+            
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerText = qData.text;
+            cardArea.appendChild(card);
+            activeCard = card;
 
-let activeCards = [...scenarios];
+            // Attach Pointer Events (Supports Touch and Mouse uniformly)
+            card.addEventListener('pointerdown', onDragStart);
+        }
 
-function switchScreen(fromId, toId) {
-    document.getElementById(fromId).classList.remove('active');
-    document.getElementById(toId).classList.add('active');
-}
+        function onDragStart(e) {
+            isDragging = true;
+            activeCard.classList.add('dragging');
+            activeCard.setPointerCapture(e.pointerId);
+            
+            // Adjust starting point to avoid snapping center
+            const rect = activeCard.getBoundingClientRect();
+            startX = e.clientX;
+            startY = e.clientY;
+            currentX = 0; currentY = 0;
 
-function goToStory() {
-    playerName = document.getElementById('p-name').value.trim();
-    playerNik = document.getElementById('p-nik').value.trim();
-    if (!playerName || !playerNik) {
-        showToast("Nama & NIK wajib diisi!", "#E53935");
-        return;
-    }
-    if (!isMusicOn) toggleMusic();
-    switchScreen('screen-welcome', 'screen-story');
-    handleStoryNext();
-}
+            activeCard.addEventListener('pointermove', onDragMove);
+            activeCard.addEventListener('pointerup', onDragEnd);
+            activeCard.addEventListener('pointercancel', onDragEnd);
+        }
 
-function handleStoryNext() {
-    const dialogs = [
-        `Halo, ${playerName}! Saya Dara. Selamat datang di Synergy Bank. 👋`,
-        "Setiap perbuatan di kantor adalah transaksi di Rekening Emosimu.",
-        "Setoran (Deposit) memperkuat hubungan, Tarikan (Withdrawal) mengikisnya.",
-        "Mari kita uji, apakah kamu bisa membedakan keduanya!"
-    ];
+        function onDragMove(e) {
+            if (!isDragging) return;
+            e.preventDefault(); // Prevent scrolling on touch
+            currentX = e.clientX - startX;
+            currentY = e.clientY - startY;
+            
+            // Apply translation, not absolute positioning
+            activeCard.style.transform = `translate(${currentX}px, ${currentY}px) scale(1.05) rotate(${currentX * 0.05}deg)`;
+            
+            // Highlight zones based on pointer position, NOT card center (more reliable)
+            const pointer = { x: e.clientX, y: e.clientY };
+            
+            highlightZone(depositZone, pointer);
+            highlightZone(withdrawalZone, pointer);
+        }
 
-    if (storyStep < dialogs.length) {
-        document.getElementById('vn-text').innerText = dialogs[storyStep];
-        storyStep++;
-    } else {
-        switchScreen('screen-story', 'screen-mission');
-    }
-}
+        function highlightZone(zone, pointer) {
+            const zRect = zone.getBoundingClientRect();
+            // Add a small buffer area for easier dropping on mobile
+            if (pointer.x > zRect.left - 20 && pointer.x < zRect.right + 20 && 
+                pointer.y > zRect.top - 20 && pointer.y < zRect.bottom + 20) {
+                zone.classList.add('highlight');
+            } else {
+                zone.classList.remove('highlight');
+            }
+        }
 
-function startGame() {
-    document.getElementById('game-dashboard').style.display = 'flex';
-    switchScreen('screen-mission', 'screen-game');
-    renderCards();
-}
+        function onDragEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            activeCard.classList.remove('dragging');
+            activeCard.removeEventListener('pointermove', onDragMove);
+            activeCard.removeEventListener('pointerup', onDragEnd);
+            activeCard.removeEventListener('pointercancel', onDragEnd);
 
-function renderCards() {
-    const pile = document.getElementById('card-pile');
-    pile.innerHTML = "";
-    activeCards.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.id = `card-${s.id}`;
-        div.innerText = s.text;
-        div.onclick = () => selectCard(s.id);
-        pile.appendChild(div);
-    });
-}
+            const pointer = { x: e.clientX, y: e.clientY };
 
-function selectCard(id) {
-    selectedId = id;
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-    document.getElementById(`card-${id}`).classList.add('selected');
-    document.getElementById('zone-deposit').classList.add('highlight');
-    document.getElementById('zone-withdrawal').classList.add('highlight');
-}
+            depositZone.classList.remove('highlight');
+            withdrawalZone.classList.remove('highlight');
 
-function handleDrop(targetType) {
-    if (!selectedId) return;
-    
-    const item = scenarios.find(s => s.id === selectedId);
-    document.getElementById('zone-deposit').classList.remove('highlight');
-    document.getElementById('zone-withdrawal').classList.remove('highlight');
+            // Collision Detection using pointer drop position
+            if (isInsideDrop(pointer, depositZone)) {
+                processAnswer("deposit");
+            } else if (isInsideDrop(pointer, withdrawalZone)) {
+                processAnswer("withdrawal");
+            } else {
+                // Snap back with animation
+                activeCard.style.transition = 'transform 0.3s ease';
+                activeCard.style.transform = 'translate(0, 0) scale(1) rotate(0deg)';
+                setTimeout(() => {
+                    if(activeCard) activeCard.style.transition = 'none';
+                }, 300);
+            }
+        }
 
-    if (item.type === targetType) {
-        score += 20;
-        playSfx('correct');
-        showToast("Benar! +20 Saldo 💰", "var(--deposit)");
-        activeCards = activeCards.filter(c => c.id !== selectedId);
-        selectedId = null;
-        renderCards();
-        if (activeCards.length === 0) finish(true);
-    } else {
-        lives--;
-        playSfx('wrong');
-        showToast("Salah! Nyawa Berkurang ❌", "var(--withdrawal)");
-        document.getElementById('game-lives').innerText = "❤️".repeat(Math.max(0, lives)) + "🖤".repeat(3 - Math.max(0, lives));
-        if (lives === 0) finish(false);
-    }
-    document.getElementById('game-score').innerText = score;
-}
+        function isInsideDrop(point, elem) {
+            const rect = elem.getBoundingClientRect();
+            return (point.x > rect.left - 20 && point.x < rect.right + 20 && 
+                    point.y > rect.top - 20 && point.y < rect.bottom + 20);
+        }
 
-function showToast(msg, color) {
-    const t = document.getElementById('toast');
-    t.innerText = msg;
-    t.style.backgroundColor = color;
-    t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 1500);
-}
+        /* --- GAME LOGIC --- */
+        function processAnswer(selectedType) {
+            const qData = state.shuffledQ[state.currentQ];
+            const isCorrect = (selectedType === qData.type);
+            
+            if(isCorrect) {
+                state.score += 10;
+                playSFX('correct');
+                showFloatText('+10', 'var(--deposit)', activeCard);
+            } else {
+                state.score -= 10;
+                playSFX('wrong');
+                showFloatText('-10', 'var(--withdrawal)', activeCard);
+            }
 
-function finish(isWin) {
-    document.getElementById('game-dashboard').style.display = 'none';
-    switchScreen('screen-game', 'screen-result');
-    const info = document.getElementById('result-user-info');
-    info.innerText = `${playerName} | ${playerNik}`;
-    document.getElementById('result-score-final').innerText = `Skor Akhir: ${score}`;
-    
-    const title = document.getElementById('result-title');
-    const closing = document.getElementById('mindset-closing');
+            document.getElementById('scoreDisplay').innerText = state.score;
+            
+            // Log for debrief
+            state.feedbackLog.push({
+                q: qData.text,
+                correct: isCorrect,
+                actual: qData.type === 'deposit' ? 'Setoran (Deposit)' : 'Tarikan (Withdrawal)',
+                reason: qData.hint
+            });
 
-    if (!isWin) {
-        title.innerText = "Saldo Bangkrut!";
-        title.style.color = "var(--withdrawal)";
-        document.getElementById('result-icon').innerText = "📉";
-        closing.innerText = "Ingat: Bank Emosi tidak pernah tutup. Jika saldomu hari ini bocor, esok adalah kesempatan baru untuk menyetor integritas dan empati. Kepercayaan tidak dibangun dalam semalam, tapi dimulai dari satu langkah kecil hari ini.";
-    } else {
-        title.innerText = "Berhasil Menabung!";
-        closing.innerText = "Luar biasa! Kamu memahami bahwa hubungan profesional adalah investasi jangka panjang. Teruslah menyetor kebaikan, kejujuran, dan keandalan, karena saldo kepercayaan yang tinggi adalah aset terbesarmu dalam karir.";
-    }
+            // Animate card disappearing
+            activeCard.style.transition = 'all 0.3s ease';
+            activeCard.style.opacity = '0';
+            activeCard.style.transform = `scale(0.5) ${selectedType === 'deposit' ? 'translateX(-100px)' : 'translateX(100px)'}`;
+            
+            setTimeout(() => {
+                state.currentQ++;
+                loadNextCard();
+            }, 300);
+        }
 
-    const list = document.getElementById('feedback-list');
-    list.innerHTML = "<h4 style='padding:10px; font-size:0.8rem;'>Evaluasi:</h4>";
-    scenarios.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'feedback-item';
-        div.innerHTML = `
-            <span class="tag ${s.type === 'deposit' ? 'tag-dep' : 'tag-with'}">${s.type.toUpperCase()}</span>
-            <p><strong>${s.text}</strong></p>
-            <p style="opacity:0.7; margin-top:3px;">${s.feedback}</p>
-        `;
-        list.appendChild(div);
-    });
-}
-</script>
+        function showFloatText(text, color, element) {
+            const ft = document.getElementById('floatTxt');
+            const rect = element.getBoundingClientRect();
+            ft.innerText = text;
+            ft.style.color = color;
+            ft.style.left = `${rect.left + rect.width/2 - 20}px`;
+            ft.style.top = `${rect.top}px`;
+            ft.style.animation = 'none';
+            void ft.offsetWidth; // trigger reflow
+            ft.style.animation = 'floatUp 1s ease-out forwards';
+        }
+
+        /* --- POST-ACTION DEBRIEF --- */
+        function endSimulation() {
+            switchScreen('screen-debrief');
+            document.getElementById('finalScore').innerText = state.score;
+            
+            let rein = document.getElementById('reinforcementMsg');
+            if(state.score >= 80) {
+                rein.innerText = "Luar Biasa! Anda menciptakan lingkungan penuh toleransi & komunikasi terbuka!";
+                rein.style.color = "var(--deposit)";
+                document.getElementById('badge-2').classList.add('earned');
+            } else if (state.score >= 40) {
+                rein.innerText = "Cukup baik. Namun waspada, beberapa miskalkulasi dapat merusak relasi secara perlahan.";
+                rein.style.color = "var(--warning)";
+            } else {
+                rein.innerText = "Status Kritis! Saldo Anda rendah. Hubungan kerja terancam penuh kecurigaan. Segera rencanakan Deposit harian!";
+                rein.style.color = "var(--withdrawal)";
+            }
+
+            const fbContainer = document.getElementById('feedbackList');
+            fbContainer.innerHTML = '';
+            state.feedbackLog.forEach(log => {
+                const div = document.createElement('div');
+                div.className = `fb-item ${log.correct ? 'correct' : 'wrong'}`;
+                div.innerHTML = `
+                    <div class="q-text">${log.q}</div>
+                    <div class="a-text">
+                        <strong>Status:</strong> ${log.correct ? '✅ Benar' : '❌ Salah'} | <strong>Fakta:</strong> Ini adalah tindakan ${log.actual}.<br>
+                        <em>Catatan: ${log.reason}</em>
+                    </div>
+                `;
+                fbContainer.appendChild(div);
+            });
+        }
+
+        /* --- WEB AUDIO API (GENERATIVE BGM & SFX) --- */
+        let audioCtx;
+        let isAudioOn = true;
+        let intervalId;
+
+        function initAudio() {
+            if (audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                startBGM();
+            } catch (e) {
+                console.log('Web Audio API not supported');
+            }
+        }
+
+        function toggleAudio() {
+            isAudioOn = !isAudioOn;
+            document.getElementById('btn-audio').innerText = isAudioOn ? "🔊 BGM ON" : "🔇 BGM OFF";
+            if(audioCtx) {
+                if(isAudioOn) {
+                    if(audioCtx.state === 'suspended') audioCtx.resume();
+                } else {
+                    if(audioCtx.state === 'running') audioCtx.suspend();
+                }
+            }
+        }
+
+        // Generative Lo-Fi Arpeggiator Vibe
+        function startBGM() {
+            const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+            let step = 0;
+            
+            intervalId = setInterval(() => {
+                if(!isAudioOn || !audioCtx || audioCtx.state !== 'running') return;
+                
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
+                    
+                    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                    
+                    step++;
+                } catch(e) {}
+            }, 300); // 300ms per step
+        }
+
+        function playSFX(type) {
+            if(!audioCtx || !isAudioOn) return;
+            
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if(type === 'correct') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                }
+            } catch(e) {}
+        }
+    </script>
 </body>
 </html>
